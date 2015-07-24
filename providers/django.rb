@@ -81,11 +81,14 @@ end
 action :before_symlink do
 
   if new_resource.collectstatic
+    release_path = new_resource.release_path
+    release_path.prepend(new_resource.manage_sub_path) if new_resource.manage_sub_path != nil
+    
     cmd = new_resource.collectstatic.is_a?(String) ? new_resource.collectstatic : "collectstatic --noinput"
     execute "#{::File.join(new_resource.virtualenv, "bin", "python")} manage.py #{cmd}" do
       user new_resource.owner
       group new_resource.group
-      cwd new_resource.release_path
+      cwd release_path
     end
   end
 
